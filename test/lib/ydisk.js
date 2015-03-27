@@ -1,5 +1,5 @@
 var should = require('should'),
-    YDisk = require('../lib/ydisk');
+    YDisk = require('../../lib/ydisk');
 
 describe('ydisk', function () {
     var options = {

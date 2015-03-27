@@ -1,6 +1,6 @@
 var format = require('util').format,
     should = require('should'),
-    util = require('../lib/util');
+    util = require('../../lib/util');
 
 describe('util', function () {
     describe('buildSnapshotName', function () {

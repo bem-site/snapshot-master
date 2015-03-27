@@ -1,5 +1,5 @@
 var path = require('path'),
-    Pather = require('../lib/pather');
+    Pather = require('../../lib/pather');
 
 describe('pather', function () {
     var pather,
