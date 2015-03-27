@@ -202,8 +202,6 @@ describe('snapshot-master', function () {
             it ('should be done', function (done) {
                 sm._sendSnapshot(data).then(function () {
                     done();
-                }).fail(function (err) {
-                    console.error(err);
                 });
             });
 
@@ -243,6 +241,63 @@ describe('snapshot-master', function () {
                 yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
                    done();
                 });
+            });
+        });
+    });
+
+    describe('_setSymlink', function () {
+        var sm,
+            baseFolder = path.join(__dirname, 'test-data'),
+            levelDbFolder = path.join(baseFolder, 'leveldb'),
+            name = utility.buildSnapshotName(),
+            buildResult = { getChanges: function () { return 'test changes json structure'; } },
+            data = { buildResult: buildResult, snapshotName: name };
+
+        describe('simple', function () {
+            before(function (done) {
+                fsExtra.mkdirpSync(baseFolder);
+                fsExtra.mkdirpSync(levelDbFolder);
+                [1, 2, 3, 4, 5].forEach(function (item) {
+                    fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
+                });
+
+                var o = _.omit(options, 'yandex-disk');
+                sm = new SnapshotMaster(o);
+                return sm._createSnapshot(data)
+                    .then(function () {
+                        return sm._sendSnapshot(data)
+                    })
+                    .then(function () {
+                        done();
+                    });
+            });
+
+            it ('should be done', function (done) {
+                sm._setSymlink(data).then(function () {
+                    done();
+                });
+            });
+
+            it ('should exists testing symlink', function () {
+                fs.existsSync(path.join(baseFolder, 'testing')).should.equal(true);
+            });
+
+            it ('should be valid real path of testing symlink', function () {
+                fs.realpathSync(path.join(baseFolder, 'testing')).should.equal(
+                    path.join(baseFolder, 'snapshots', name));
+            });
+
+            it ('should exists staging symlink', function () {
+                fs.existsSync(path.join(baseFolder, 'staging')).should.equal(true);
+            });
+
+            it ('should be valid real path of staging symlink', function () {
+                fs.realpathSync(path.join(baseFolder, 'staging')).should.equal(
+                    path.join(baseFolder, 'snapshots', name));
+            });
+
+            after(function () {
+                fsExtra.removeSync(path.join(__dirname, 'test-data'));
             });
         });
     });
