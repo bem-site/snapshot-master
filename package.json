@@ -20,11 +20,17 @@
     "cron-runner": "^0.0.x",
     "forever": "^0.14.x",
     "fs-extra": "^0.16.x",
+    "fstream": "^1.0.x",
     "inherit": "^2.2.x",
     "lodash": "^3.1.x",
     "moment": "^2.9.0",
+    "nodemailer": "^1.3.x",
+    "nodemailer-smtp-transport": "^0.1.x",
+    "tar": "^1.0.x",
+    "trtd": "^0.0.x",
     "vow": "~0.4.x",
-    "vow-node": "^0.2.x"
+    "vow-node": "^0.2.x",
+    "yandex-disk": "^0.0.x"
   },
   "devDependencies": {
     "mocha": "~2.2.x",
