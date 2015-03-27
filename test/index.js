@@ -6,7 +6,8 @@ var fs = require('fs'),
     moment = require('moment'),
 
     should = require('should'),
-    SnapshotCleaner = require('../lib/master.js');
+    utility = require('../lib/util'),
+    SnapshotMaster = require('../lib/master.js');
 
 describe('snapshot-master', function () {
     var options = {
@@ -28,57 +29,115 @@ describe('snapshot-master', function () {
     describe('initialization', function () {
         it ('should fail if path option was not set', function () {
             var o = _.omit(options, 'path');
-            (function () { return new SnapshotCleaner(o); })
+            (function () { return new SnapshotMaster(o); })
                 .should.throw('Absolute path to snapshots directory was not set');
         });
 
         it ('should use default symlinks option', function () {
             var o = _.omit(options, 'symlinks'),
-                sc = new SnapshotCleaner(o);
+                sm = new SnapshotMaster(o);
 
-            sc.should.be.ok;
-            sc._options.symlinks.should.be.ok;
-            should.deepEqual(sc._options.symlinks, ['testing']);
+            sm.should.be.ok;
+            sm._options.symlinks.should.be.ok;
+            should.deepEqual(sm._options.symlinks, ['testing']);
         });
 
         describe('without yandex-disk options', function () {
             it ('should use simple send', function () {
                 var o = _.omit(options, 'yandex-disk'),
-                    sc = new SnapshotCleaner(o);
+                    sm = new SnapshotMaster(o);
 
-                sc._sendTask.getName().should.equal('simple');
+                sm._sendTask.getName().should.equal('simple');
             });
 
             it ('should use simple symlink', function () {
                 var o = _.omit(options, 'yandex-disk'),
-                    sc = new SnapshotCleaner(o);
+                    sm = new SnapshotMaster(o);
 
-                sc._symlinkTask.getName().should.equal('simple');
+                sm._symlinkTask.getName().should.equal('simple');
             });
         });
 
         describe('with yandex-disk options', function () {
             it ('should use ydisk send', function () {
-                var sc = new SnapshotCleaner(options);
-                sc._sendTask.getName().should.equal('ydisk');
+                var sm = new SnapshotMaster(options);
+                sm._sendTask.getName().should.equal('ydisk');
             });
 
             it ('should use ydisk symlink', function () {
-                var sc = new SnapshotCleaner(options);
-                sc._symlinkTask.getName().should.equal('ydisk');
+                var sm = new SnapshotMaster(options);
+                sm._symlinkTask.getName().should.equal('ydisk');
             });
         });
 
         it('should be successfully initialized with given options', function () {
-            var sc = new SnapshotCleaner(options);
-            sc.should.be.ok;
+            var sm = new SnapshotMaster(options);
+            sm.should.be.ok;
 
-            sc._options.path.should.be.ok;
-            sc._options.symlinks.should.be.ok;
-            sc._options['yandex-disk'].should.be.ok;
+            sm._options.path.should.be.ok;
+            sm._options.symlinks.should.be.ok;
+            sm._options['yandex-disk'].should.be.ok;
 
-            sc._options.path.should.equal(path.resolve(process.cwd(), './test/test-data'));
-            should.deepEqual(sc._options.symlinks, ['staging', 'testing']);
+            sm._options.path.should.equal(path.resolve(process.cwd(), './test/test-data'));
+            should.deepEqual(sm._options.symlinks, ['staging', 'testing']);
+        });
+    });
+
+    describe('_createSnapshot', function () {
+        var sm,
+            baseFolder = path.join(__dirname, 'test-data'),
+            levelDbFolder = path.join(baseFolder, 'leveldb'),
+            name,
+            buildResult,
+            data;
+
+        before(function () {
+            name = utility.buildSnapshotName();
+            buildResult = { getChanges: function () { return 'test changes json structure'; } };
+            data = { buildResult: buildResult, snapshotName: name };
+
+            fsExtra.mkdirpSync(baseFolder);
+            fsExtra.mkdirpSync(levelDbFolder);
+            [1, 2, 3, 4, 5].forEach(function (item) {
+                fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
+            });
+
+            sm = new SnapshotMaster(options);
+        });
+
+        it ('should be done', function (done) {
+            return sm._createSnapshot(data).then(function () {
+                done();
+            });
+        });
+
+        it ('should exists snapshots folder', function () {
+            fs.existsSync(path.join(baseFolder, 'snapshots')).should.equal(true);
+        });
+
+        it ('should exists snapshot folder', function () {
+            fs.existsSync(path.join(baseFolder, 'snapshots', name)).should.equal(true);
+        });
+
+        it ('should data.json snapshot file', function () {
+            fs.existsSync(path.join(baseFolder, 'snapshots', name, 'data.json')).should.equal(true);
+        });
+
+        it ('should leveldb snapshot folder', function () {
+            fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb')).should.equal(true);
+        });
+
+        it ('should have valid data.json file', function () {
+            var content = fsExtra.readJsonSync(path.join(baseFolder, 'snapshots', name, 'data.json'));
+            content.should.be.ok;
+            content.should.have.property('date');
+            content.should.have.property('changes');
+
+            content.date.should.equal(name);
+        });
+
+        after(function () {
+            fsExtra.removeSync(path.join(__dirname, 'test-data'));
         });
     });
 
