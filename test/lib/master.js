@@ -89,7 +89,7 @@ describe('snapshot-master', function () {
 
     describe('_createSnapshot', function () {
         var sm,
-            baseFolder = path.join(__dirname, 'test-data'),
+            baseFolder = path.join(__dirname, '../test-data'),
             levelDbFolder = path.join(baseFolder, 'leveldb'),
             name = utility.buildSnapshotName(),
             buildResult = { getChanges: function () { return 'test changes json structure'; } },
@@ -137,13 +137,13 @@ describe('snapshot-master', function () {
         });
 
         after(function () {
-            fsExtra.removeSync(path.join(__dirname, 'test-data'));
+            fsExtra.removeSync(path.join(__dirname, '../test-data'));
         });
     });
 
     describe('_sendSnapshot', function () {
         var sm,
-            baseFolder = path.join(__dirname, 'test-data'),
+            baseFolder = path.join(__dirname, '../test-data'),
             levelDbFolder = path.join(baseFolder, 'leveldb'),
             name = utility.buildSnapshotName(),
             buildResult = { getChanges: function () { return 'test changes json structure'; } },
@@ -179,7 +179,7 @@ describe('snapshot-master', function () {
             });
 
             after(function () {
-                fsExtra.removeSync(path.join(__dirname, 'test-data'));
+                fsExtra.removeSync(path.join(__dirname, '../test-data'));
             });
         });
 
@@ -237,7 +237,7 @@ describe('snapshot-master', function () {
             });
 
             after(function (done) {
-                fsExtra.removeSync(path.join(__dirname, 'test-data'));
+                fsExtra.removeSync(path.join(__dirname, '../test-data'));
                 yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
                    done();
                 });
@@ -247,7 +247,7 @@ describe('snapshot-master', function () {
 
     describe('_setSymlink', function () {
         var sm,
-            baseFolder = path.join(__dirname, 'test-data'),
+            baseFolder = path.join(__dirname, '../test-data'),
             levelDbFolder = path.join(baseFolder, 'leveldb'),
             name = utility.buildSnapshotName(),
             buildResult = { getChanges: function () { return 'test changes json structure'; } },
@@ -297,7 +297,7 @@ describe('snapshot-master', function () {
             });
 
             after(function () {
-                fsExtra.removeSync(path.join(__dirname, 'test-data'));
+                fsExtra.removeSync(path.join(__dirname, '../test-data'));
             });
         });
     });
@@ -306,7 +306,7 @@ describe('snapshot-master', function () {
         before(function () {});
 
         after(function () {
-            fsExtra.removeSync(path.join(__dirname, 'test-data'));
+            fsExtra.removeSync(path.join(__dirname, '../test-data'));
         });
     });
 });
