@@ -241,9 +241,12 @@ describe('snapshot-master', function () {
 
             after(function (done) {
                 fsExtra.removeSync(path.join(__dirname, '../test-data'));
+                done();
+                /*
                 yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
                    done();
                 });
+                */
             });
         });
     });
@@ -301,6 +304,71 @@ describe('snapshot-master', function () {
 
             after(function () {
                 fsExtra.removeSync(path.join(__dirname, '../test-data'));
+            });
+        });
+
+        describe('ydisk', function () {
+            before(function (done) {
+                fsExtra.mkdirpSync(baseFolder);
+                fsExtra.mkdirpSync(levelDbFolder);
+                [1, 2, 3, 4, 5].forEach(function (item) {
+                    fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
+                });
+
+                sm = new SnapshotMaster(options);
+                return sm._createSnapshot(data)
+                    .then(function () {
+                        return sm._sendTask.execute(data)
+                    })
+                    .then(function () {
+                        done();
+                    })
+                    .fail(function (err) {
+                        console.err(err);
+                    });
+            });
+
+            it ('should be done', function (done) {
+                sm._symlinkTask.execute(data).then(function () {
+                    done();
+                });
+            });
+
+            it ('should exists testing symlink', function (done) {
+                yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, 'testing'), function (err, exists) {
+                    exists.should.be.equal(true);
+                    done();
+                });
+            });
+
+            it ('should be valid name of snapshot in testing file', function (done) {
+                yDisk.getDisk().readFile(path.join(options['yandex-disk'].namespace, 'testing'), 'utf-8',
+                    function (err, data) {
+                        data.should.be.equal(name);
+                        done();
+                    });
+            });
+
+            it ('should exists staging symlink', function (done) {
+                yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, 'staging'), function (err, exists) {
+                    exists.should.be.equal(true);
+                    done();
+                });
+            });
+
+            it ('should be valid name of snapshot in staging file', function (done) {
+                yDisk.getDisk().readFile(path.join(options['yandex-disk'].namespace, 'staging'), 'utf-8',
+                    function (err, data) {
+                        data.should.be.equal(name);
+                        done();
+                    });
+            });
+
+            after(function (done) {
+                fsExtra.removeSync(path.join(__dirname, '../test-data'));
+                yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
+                    done();
+                });
             });
         });
     });
