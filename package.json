@@ -17,6 +17,7 @@
     "node": ">= 0.8.0"
   },
   "dependencies": {
+    "bem-site-logger": "0.0.x",
     "cron-runner": "^0.0.x",
     "forever": "^0.14.x",
     "fs-extra": "^0.16.x",
