@@ -2,8 +2,14 @@ var should = require('should'),
     SendChanges = require('../../lib/send-changes');
 
 describe('send-changes', function () {
+    var options = {
+        logger: {
+            level: 'debug'
+        }
+    };
+
     describe('_groupLibraryChanges', function () {
-        var sendChanges = new SendChanges();
+        var sendChanges = new SendChanges(options);
 
         it('should return null on empty array', function () {
             should(sendChanges._groupLibraryChanges([])).be.equal(null);
@@ -26,7 +32,7 @@ describe('send-changes', function () {
     });
 
     describe('_joinChanges', function () {
-        var sendChanges = new SendChanges();
+        var sendChanges = new SendChanges(options);
 
         it('without added modified and removed', function () {
             var jc = sendChanges._joinChanges(null, null, null, 'test title');
@@ -79,7 +85,7 @@ describe('send-changes', function () {
     });
 
     describe('_createDocChangesTable', function (done) {
-        var sendChanges = new SendChanges(),
+        var sendChanges = new SendChanges(options),
             input = {
                 _docs: {
                     _added: [
@@ -104,7 +110,7 @@ describe('send-changes', function () {
     });
 
     describe('_createLibraryChangesTable', function (done) {
-        var sendChanges = new SendChanges(),
+        var sendChanges = new SendChanges(options),
             input = {
             _libraries: {
                 _added: [

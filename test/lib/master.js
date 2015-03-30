@@ -14,6 +14,9 @@ describe('snapshot-master', function () {
     var options = {
             path: path.resolve(process.cwd(), './test/test-data'),
             symlinks: ['staging', 'testing'],
+            logger: {
+                mode: 'testing'
+            },
             'yandex-disk': {
                 user: 'snapshot.master',
                 password: '112233445566778899',
@@ -165,7 +168,7 @@ describe('snapshot-master', function () {
             });
 
             it ('should be done', function (done) {
-                sm._sendSnapshot(data).then(function () {
+                sm._sendTask.execute(data).then(function () {
                     done();
                 });
             });
@@ -200,7 +203,7 @@ describe('snapshot-master', function () {
             });
 
             it ('should be done', function (done) {
-                sm._sendSnapshot(data).then(function () {
+                sm._sendTask.execute(data).then(function () {
                     done();
                 });
             });
@@ -265,7 +268,7 @@ describe('snapshot-master', function () {
                 sm = new SnapshotMaster(o);
                 return sm._createSnapshot(data)
                     .then(function () {
-                        return sm._sendSnapshot(data)
+                        return sm._sendTask.execute(data)
                     })
                     .then(function () {
                         done();
@@ -273,7 +276,7 @@ describe('snapshot-master', function () {
             });
 
             it ('should be done', function (done) {
-                sm._setSymlink(data).then(function () {
+                sm._symlinkTask.execute(data).then(function () {
                     done();
                 });
             });
