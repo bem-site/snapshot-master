@@ -2,8 +2,8 @@ var fs = require('fs'),
     path = require('path'),
     _ = require('lodash'),
 
+    vow = require('vow'),
     fsExtra = require('fs-extra'),
-    moment = require('moment'),
 
     should = require('should'),
     utility = require('../../lib/util'),
@@ -12,6 +12,7 @@ var fs = require('fs'),
 
 describe('snapshot-master', function () {
     var options = {
+            name: 'send-changes',
             path: path.resolve(process.cwd(), './test/test-data'),
             symlinks: ['staging', 'testing'],
             logger: {
@@ -25,6 +26,12 @@ describe('snapshot-master', function () {
             cron: {
                 pattern: '0 */1 * * * *',
                 debug: true
+            },
+            'e-mail': {
+                host: 'stub',
+                port: 25,
+                from: 'from@snapshot-master.yandex.net',
+                to: ['to@snapshot-master.yandex.net']
             }
         },
         yDisk;
@@ -364,20 +371,78 @@ describe('snapshot-master', function () {
                     });
             });
 
-            after(function (done) {
+            after(function () {
                 fsExtra.removeSync(path.join(__dirname, '../test-data'));
+                /*
                 yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
                     done();
                 });
+                */
             });
         });
     });
 
     describe('execute', function () {
-        before(function () {});
+        var sm,
+            baseFolder = path.join(__dirname, '../test-data'),
+            levelDbFolder = path.join(baseFolder, 'leveldb');
 
-        after(function () {
+        before(function () {
+            fsExtra.mkdirpSync(baseFolder);
+            fsExtra.mkdirpSync(levelDbFolder);
+            [1, 2, 3, 4, 5].forEach(function (item) {
+                fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
+            });
+
+            sm = new SnapshotMaster(options);
+            sm.buildTarget = function () {
+                return vow.resolve({
+                    getChanges: function () {
+                        return {
+                            areModified: function () {
+                                return true;
+                            },
+                            _docs: {
+                                _added: [
+                                    { title: 'title1', url: 'http://test.url1' },
+                                    { title: null, url: 'http://test.url2' }
+                                ],
+                                _modified: [
+                                    { title: 'title3', url: 'http://test.url3' },
+                                    { title: 'title4', url: 'http://test.url4' }
+                                ],
+                                _removed: []
+                            },
+                            _libraries: {
+                                _added: [
+                                    { lib: 'bem-core', version: 'v2.6.0' },
+                                    { lib: 'bem-components', version: 'v2.1.0' }
+                                ],
+                                _modified: [
+                                    { lib: 'bem-components', version: 'v2.0.0' },
+                                    { lib: 'bem-core', version: 'v2.5.0' }
+                                ],
+                                _removed: [
+                                    { lib: 'bem-core', version: 'v2.3.0' }
+                                ]
+                            }
+                        };
+                    }
+                });
+            };
+        });
+
+        it('should be done', function (done) {
+            sm.execute().then(function () {
+                done();
+            });
+        });
+
+        after(function (done) {
             fsExtra.removeSync(path.join(__dirname, '../test-data'));
+            yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
+                done();
+            });
         });
     });
 });
