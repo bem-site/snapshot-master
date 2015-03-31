@@ -84,6 +84,18 @@ describe('snapshot-master', function () {
             });
         });
 
+        describe('without e-mail options', function () {
+            it('should set stub instead of setChanges task', function () {
+                var o = _.omit(options, 'e-mail'),
+                    sm = new SnapshotMaster(o);
+
+                sm._sendChangesTask.should.be.ok;
+                sm._sendChangesTask.should.have.property('execute');
+                sm._sendChangesTask.execute.should.be.instanceOf(Function);
+                should.deepEqual(sm._sendChangesTask.execute(), vow.resolve());
+            });
+        });
+
         it('should be successfully initialized with given options', function () {
             var sm = new SnapshotMaster(options);
             sm.should.be.ok;
@@ -382,6 +394,48 @@ describe('snapshot-master', function () {
         });
     });
 
+    describe('buildTarget', function () {
+        it('should be valid buildTarget', function (done) {
+            var sm = new SnapshotMaster(options);
+            sm.buildTarget().then(function (result) {
+                result.should.be.ok;
+                result.should.have.property('getChanges');
+
+                result.getChanges.should.be.instanceOf(Function);
+                result.getChanges().should.be.ok;
+                result.getChanges().should.have.property('areModified');
+                result.getChanges().areModified().should.equal(true);
+                done();
+            });
+        });
+    });
+
+    describe('execute without changes', function () {
+        var sm;
+
+        before(function () {
+            sm = new SnapshotMaster(options);
+            sm.buildTarget = function () {
+                return vow.resolve({
+                    getChanges: function () {
+                        return {
+                            areModified: function () {
+                                return false;
+                            }
+                        };
+                    }
+                });
+            };
+        });
+
+        it('should be done', function (done) {
+            sm.execute().then(function (result) {
+                result.should.equal(false);
+                done();
+            });
+        });
+    });
+
     describe('execute', function () {
         var sm,
             baseFolder = path.join(__dirname, '../test-data'),
@@ -433,7 +487,8 @@ describe('snapshot-master', function () {
         });
 
         it('should be done', function (done) {
-            sm.execute().then(function () {
+            sm.execute().then(function (result) {
+                result.should.equal(true);
                 done();
             });
         });
