@@ -1,12 +1,47 @@
-var should = require('should'),
+var _ = require('lodash'),
+    should = require('should'),
+    utility = require('../../lib/util'),
     SendChanges = require('../../lib/send-changes');
 
 describe('send-changes', function () {
     var options = {
-        logger: {
-            level: 'debug'
-        }
-    };
+            name: 'send-changes',
+            logger: { level: 'debug' },
+            'e-mail': {
+                host: 'stub',
+                port: 25,
+                from: 'from@snapshot-master.yandex.net',
+                to: ['to@snapshot-master.yandex.net']
+            }
+        },
+        docsChanges = {
+            _docs: {
+                _added: [
+                    { title: 'title1', url: 'http://test.url1' },
+                    { title: null, url: 'http://test.url2' }
+                ],
+                _modified: [
+                    { title: 'title3', url: 'http://test.url3' },
+                    { title: 'title4', url: 'http://test.url4' }
+                ],
+                _removed: []
+            }
+        },
+        librariesChanges = {
+            _libraries: {
+                _added: [
+                    { lib: 'bem-core', version: 'v2.6.0' },
+                    { lib: 'bem-components', version: 'v2.1.0' }
+                ],
+                _modified: [
+                    { lib: 'bem-components', version: 'v2.0.0' },
+                    { lib: 'bem-core', version: 'v2.5.0' }
+                ],
+                _removed: [
+                    { lib: 'bem-core', version: 'v2.3.0' }
+                ]
+            }
+        };
 
     describe('_groupLibraryChanges', function () {
         var sendChanges = new SendChanges(options);
@@ -21,7 +56,7 @@ describe('send-changes', function () {
                     { lib: 'bem-core', version: 'v2.5.0' },
                     { lib: 'bem-core', version: 'v2.6.0' },
                     { lib: 'bem-components', version: 'v2.0.0' },
-                    { lib: 'bem-components', version: 'v2.1.0' },
+                    { lib: 'bem-components', version: 'v2.1.0' }
                 ],
                 output = [
                     { lib: 'bem-core', versions: 'v2.3.0, v2.5.0, v2.6.0' },
@@ -86,19 +121,7 @@ describe('send-changes', function () {
 
     describe('_createDocChangesTable', function (done) {
         var sendChanges = new SendChanges(options),
-            input = {
-                _docs: {
-                    _added: [
-                        { title: 'title1', url: 'http://test.url1' },
-                        { title: null, url: 'http://test.url2' }
-                    ],
-                    _modified: [
-                        { title: 'title3', url: 'http://test.url3' },
-                        { title: 'title4', url: 'http://test.url4' }
-                    ],
-                    _removed: []
-                }
-            };
+            input = docsChanges;
 
         it('should be done', function (done) {
             sendChanges._createDocChangesTable(input).then(function (data) {
@@ -111,21 +134,7 @@ describe('send-changes', function () {
 
     describe('_createLibraryChangesTable', function (done) {
         var sendChanges = new SendChanges(options),
-            input = {
-            _libraries: {
-                _added: [
-                    { lib: 'bem-core', version: 'v2.6.0' },
-                    { lib: 'bem-components', version: 'v2.1.0' }
-                ],
-                _modified: [
-                    { lib: 'bem-components', version: 'v2.0.0' },
-                    { lib: 'bem-core', version: 'v2.5.0' }
-                ],
-                _removed: [
-                    { lib: 'bem-core', version: 'v2.3.0' }
-                ]
-            }
-        };
+            input = librariesChanges;
 
         it('should be done', function (done) {
             sendChanges._createLibraryChangesTable(input).then(function (data) {
@@ -135,4 +144,25 @@ describe('send-changes', function () {
             });
         });
     });
+
+    describe('execute', function () {
+        it('should be done', function (done) {
+            var sendChanges = new SendChanges(options),
+                data = {
+                    snapshotName: utility.buildSnapshotName(),
+                    buildResult: {
+                        getChanges: function () {
+                            return _.merge(docsChanges, librariesChanges);
+                        }
+                    }
+                };
+            sendChanges.execute(data)
+                .then(function () {
+                    done();
+                })
+                .fail(function (err) {
+                    console.log(err);
+                })
+        });
+    })
 });
