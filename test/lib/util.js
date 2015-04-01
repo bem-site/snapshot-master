@@ -32,4 +32,22 @@ describe('util', function () {
             util.buildSnapshotName().should.be.equal(deprecated());
         });
     });
+
+    describe('sortSnapshots', function () {
+        it('should be ok', function () {
+            util.sortSnapshots('1:4:2015-12:29:14', '29:3:2015-1:39:17').should.be.ok;
+        });
+
+        it('should be number', function () {
+            util.sortSnapshots('1:4:2015-12:29:14', '29:3:2015-1:39:17').should.be.instanceOf(Number);
+        });
+
+        it('should be greater then 0', function () {
+            util.sortSnapshots('1:4:2015-12:29:14', '29:3:2015-1:39:17').should.be.above(0);
+        });
+
+        it('should be less then 0', function () {
+            util.sortSnapshots('29:3:2015-1:39:17', '1:4:2015-12:29:14').should.be.below(0);
+        });
+    });
 });
