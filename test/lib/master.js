@@ -60,7 +60,6 @@ describe('snapshot-master', function () {
             it ('should use simple send', function () {
                 var o = _.omit(options, 'yandex-disk'),
                     sm = new SnapshotMaster(o);
-
                 sm._sendTask.getName().should.equal('simple');
             });
 
@@ -171,102 +170,66 @@ describe('snapshot-master', function () {
             buildResult = { getChanges: function () { return 'test changes json structure'; } },
             data = { buildResult: buildResult, snapshotName: name };
 
-        describe('simple', function () {
-            before(function (done) {
-                fsExtra.mkdirpSync(baseFolder);
-                fsExtra.mkdirpSync(levelDbFolder);
-                [1, 2, 3, 4, 5].forEach(function (item) {
-                    fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
-                });
+        before(function (done) {
+            fsExtra.mkdirpSync(baseFolder);
+            fsExtra.mkdirpSync(levelDbFolder);
+            [1, 2, 3, 4, 5].forEach(function (item) {
+                fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
+            });
 
-                var o = _.omit(options, 'yandex-disk');
-                sm = new SnapshotMaster(o);
-                return sm._createSnapshot(data).then(function () {
+            sm = new SnapshotMaster(options);
+            return sm._createSnapshot(data).then(function () {
+                yDisk.getDisk().mkdir(options['yandex-disk'].namespace, function (err) {
                     done();
                 });
-            });
-
-            it ('should be done', function (done) {
-                sm._sendTask.execute(data).then(function () {
-                    done();
-                });
-            });
-
-            it ('should exists db archive', function () {
-                fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb.tar.gz')).should.equal(true);
-            });
-
-            it ('should not exists db folder', function () {
-                fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb')).should.equal(false);
-            });
-
-            after(function () {
-                fsExtra.removeSync(path.join(__dirname, '../test-data'));
             });
         });
 
-        describe('ydisk', function () {
-            before(function (done) {
-                fsExtra.mkdirpSync(baseFolder);
-                fsExtra.mkdirpSync(levelDbFolder);
-                [1, 2, 3, 4, 5].forEach(function (item) {
-                    fsExtra.writeJSONSync(path.join(levelDbFolder, item + '.json'), { file: item });
-                });
-
-                sm = new SnapshotMaster(options);
-                return sm._createSnapshot(data).then(function () {
-                    yDisk.getDisk().mkdir(options['yandex-disk'].namespace, function (err) {
-                        done();
-                    });
-                });
+        it ('should be done', function (done) {
+            sm._sendTask.execute(data).then(function () {
+                done();
             });
+        });
 
-            it ('should be done', function (done) {
-                sm._sendTask.execute(data).then(function () {
-                    done();
-                });
+        it ('should exists db archive', function () {
+            fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb.tar.gz')).should.equal(true);
+        });
+
+        it ('should not exists db folder', function () {
+            fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb')).should.equal(false);
+        });
+
+        it ('should exists snapshot folder on Yandex Disk', function (done) {
+            yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, name), function (err, exists) {
+                exists.should.be.equal(true);
+                done();
             });
+        });
 
-            it ('should exists db archive', function () {
-                fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb.tar.gz')).should.equal(true);
-            });
-
-            it ('should not exists db folder', function () {
-                fs.existsSync(path.join(baseFolder, 'snapshots', name, 'leveldb')).should.equal(false);
-            });
-
-            it ('should exists snapshot folder on Yandex Disk', function (done) {
-                yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, name), function (err, exists) {
+        it ('should exists snapshot db archive on Yandex Disk', function (done) {
+            yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, name, 'leveldb.tar.gz'),
+                function (err, exists) {
                     exists.should.be.equal(true);
                     done();
                 });
-            });
+        });
 
-            it ('should exists snapshot db archive on Yandex Disk', function (done) {
-                yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, name, 'leveldb.tar.gz'),
-                    function (err, exists) {
-                        exists.should.be.equal(true);
-                        done();
-                    });
-            });
-
-            it ('should exists snapshot data.json file on Yandex Disk', function (done) {
-                yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, name, 'data.json'),
-                    function (err, exists) {
-                        exists.should.be.equal(true);
-                        done();
-                    });
-            });
-
-            after(function (done) {
-                fsExtra.removeSync(path.join(__dirname, '../test-data'));
-                done();
-                /*
-                yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
-                   done();
+        it ('should exists snapshot data.json file on Yandex Disk', function (done) {
+            yDisk.getDisk().exists(path.join(options['yandex-disk'].namespace, name, 'data.json'),
+                function (err, exists) {
+                    exists.should.be.equal(true);
+                    done();
                 });
-                */
+        });
+
+        after(function (done) {
+            fsExtra.removeSync(path.join(__dirname, '../test-data'));
+            done();
+            /*
+            yDisk.getDisk().remove(options['yandex-disk'].namespace, function (err) {
+               done();
             });
+            */
         });
     });
 
