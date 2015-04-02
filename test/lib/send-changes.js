@@ -1,7 +1,7 @@
 var _ = require('lodash'),
     should = require('should'),
     utility = require('../../lib/util'),
-    SendChanges = require('../../lib/send-changes');
+    SendChanges = require('../../lib/master/send-changes');
 
 describe('send-changes', function () {
     var options = {

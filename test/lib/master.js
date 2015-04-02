@@ -8,7 +8,7 @@ var fs = require('fs'),
     should = require('should'),
     utility = require('../../lib/util'),
     YDisk = require('../../lib/ydisk'),
-    SnapshotMaster = require('../../lib/master.js');
+    SnapshotMaster = require('../../lib/master/index.js');
 
 describe('snapshot-master', function () {
     var options = {
