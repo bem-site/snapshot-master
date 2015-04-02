@@ -1,6 +1,8 @@
 # snapshot-master
 Tools for suitable snapshot manipulation
 
+[![NPM](https://nodei.co/npm/bem-site-snapshot-master.png)](https://nodei.co/npm/bem-site-snapshot-master/)
+
 [![Coveralls branch](https://img.shields.io/coveralls/bem-site/snapshot-master/master.svg)](https://coveralls.io/r/bem-site/snapshot-master?branch=master)
 [![Travis](https://img.shields.io/travis/bem-site/snapshot-master.svg)](https://travis-ci.org/bem-site/snapshot-master)
 [![David](https://img.shields.io/david/bem-site/snapshot-master.svg)](https://david-dm.org/bem-site/snapshot-master)
