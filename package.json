@@ -1,5 +1,5 @@
 {
-  "name": "snapshot-master",
+  "name": "bem-site-snapshot-master",
   "version": "0.0.1",
   "repository": {
     "type": "git",
@@ -21,12 +21,12 @@
     "bem-site-mail-sender": "0.0.x",
     "cron-runner": "^0.0.x",
     "forever": "^0.14.x",
-    "fs-extra": "^0.16.x",
+    "fs-extra": "^0.18.x",
     "fstream": "^1.0.x",
     "inherit": "^2.2.x",
     "lodash": "^3.1.x",
     "moment": "^2.9.0",
-    "tar": "^1.0.x",
+    "tar": "^2.0.x",
     "trtd": "^0.0.x",
     "vow": "~0.4.x",
     "vow-node": "^0.2.x",
