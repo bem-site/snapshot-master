@@ -6,6 +6,8 @@ Tools for suitable snapshot manipulation
 [![David](https://img.shields.io/david/bem-site/snapshot-master.svg)](https://david-dm.org/bem-site/snapshot-master)
 [![David](https://img.shields.io/david/dev/bem-site/snapshot-master.svg)](https://david-dm.org/bem-site/snapshot-master#info=devDependencies)
 
+![GitHub Logo](./logo.gif)
+
 ## Usage
 
 ### As npm package
