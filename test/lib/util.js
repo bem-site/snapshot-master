@@ -43,11 +43,11 @@ describe('util', function () {
         });
 
         it('should be greater then 0', function () {
-            util.sortSnapshots('1:4:2015-12:29:14', '29:3:2015-1:39:17').should.be.above(0);
+            util.sortSnapshots('1:4:2015-12:29:14', '29:3:2015-1:39:17').should.be.below(0);
         });
 
         it('should be less then 0', function () {
-            util.sortSnapshots('29:3:2015-1:39:17', '1:4:2015-12:29:14').should.be.below(0);
+            util.sortSnapshots('29:3:2015-1:39:17', '1:4:2015-12:29:14').should.be.above(0);
         });
     });
 });
