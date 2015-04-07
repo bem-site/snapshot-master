@@ -3,18 +3,14 @@
   "name": "snapshot master",
   "symlinks": ["testing", "staging"],
   "yandex-disk": {
-    "user": "snapshot.master",
-    "password": "112233445566778899",
-    "namespace": "test"
+    "user": "",
+    "password": "",
+    "namespace": ""
   },
   "e-mail": {
-    "host": "outbound-relay.yandex.net",
+    "host": "",
     "port": 25,
-    "from": "snapshot-master@legoprovider.dev.yandex-team.ru",
-    "to": [
-      "bemer@yandex-team.ru",
-      "gela-d@yandex-team.ru",
-      "tavria@yandex-team.ru"
-    ]
+    "from": "",
+    "to": []
   }
 }
