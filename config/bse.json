@@ -1,0 +1,20 @@
+{
+  "github": {
+    "public": {
+      "token": []
+    },
+    "people": ""
+  },
+  "mds": {
+    "namespace": "",
+    "get": {
+      "host": ""
+    },
+    "post": {
+      "host": ""
+    },
+    "auth": "",
+    "timeout": 300000,
+    "debug": false
+  }
+}
