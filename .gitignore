@@ -13,6 +13,8 @@ pids
 npm-debug.log
 node_modules
 coverage
+db
+cache
 
 config/_bse.json
 config/_config.json
