@@ -4,3 +4,6 @@ test
 coverage
 config
 bin
+db
+logs
+cache
