@@ -18,3 +18,4 @@ cache
 
 config/_bse.json
 config/_config.json
+config/_tripwire.json

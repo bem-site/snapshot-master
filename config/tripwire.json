@@ -1,0 +1,8 @@
+{
+  "warning": "900mb",
+  "critical": "1000mb",
+  "interval": "1s",
+  "cycle": 3,
+  "exitTime": "5s",
+  "disconnectTime": "3s"
+}

@@ -1,8 +1,11 @@
 var fs = require('fs'),
+    path = require('path'),
     inherit = require('inherit'),
-    SnapshotMaster = require('../lib/master/index'),
+    fsExtra = require('fs-extra'),
     bseAdmin = require('bse-admin'),
+    Tripwire = require('memory-tripwire'),
     logger = require('bem-site-logger').createLogger(module),
+    SnapshotMaster = require('../lib/master/index'),
 
     DataBuilder = inherit(SnapshotMaster, {
 
@@ -35,15 +38,16 @@ var fs = require('fs'),
                 .then(function () { this['setIdle'](); }, this)
                 .fail(function () { this['setIdle'](); }, this);
         }
-    });
+    }),
+    tripWireConfig = fsExtra.readJSONFileSync('./config/_tripwire.json'),
+    appConfig = fsExtra.readJSONFileSync('./config/_config.json'),
+    tripwire = new Tripwire(tripWireConfig),
+    builder = new DataBuilder(appConfig);
 
-fs.readFile('./config/_config.json', { encoding: 'utf-8' }, function (error, config) {
-    if (error) {
-        logger.error('Can\'t read configuration file for snapshot-master tool');
-        throw error;
-    }
-    var builder = new DataBuilder(JSON.parse(config));
-    builder.loadConfig(function () {
-        builder.start();
-    });
+tripwire.start();
+tripwire.on('bomb', function () {
+    logger.warn('||| ---  MEMORY LIMIT EXCEED. PROCESS WILL BE RESTARTED --- ||| ');
+});
+builder.loadConfig(function () {
+    builder.start();
 });

@@ -25,6 +25,7 @@
     "fstream": "^1.0.x",
     "inherit": "^2.2.x",
     "lodash": "^3.1.x",
+    "memory-tripwire": "^1.0.0",
     "moment": "^2.9.0",
     "tar": "^2.0.x",
     "trtd": "^0.0.x",
@@ -42,9 +43,10 @@
     "jscs": "^1.11.x"
   },
   "scripts": {
-    "_app_config": "cp config/config.json config/_config.json",
-    "_bse_config": "cp config/bse.json config/_bse.json",
-    "config": "npm run  _app_config && npm run _bse_config",
+    "_app_config": "cp -i config/config.json config/_config.json",
+    "_bse_config": "cp -i config/bse.json config/_bse.json",
+    "_tripwire_config": "cp -i config/tripwire.json config/_tripwire.json",
+    "config": "npm run  _app_config && npm run _bse_config && npm run _tripwire_config",
     "mocha": "NODE_ENV=testing node_modules/.bin/mocha",
     "istanbul": "istanbul cover ./node_modules/mocha/bin/_mocha",
     "codestyle": "node_modules/.bin/jshint . && node_modules/.bin/jscs -c .jscs.js .",
