@@ -1,4 +1,4 @@
 --reporter list
 --ui bdd
 --growl
---timeout 20000
+--timeout 30000
