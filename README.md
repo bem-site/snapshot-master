@@ -10,6 +10,8 @@ Tools for suitable snapshot manipulation
 
 ![GitHub Logo](./logo.gif)
 
+[RUSSIAN DOCUMENTATION](./README.ru.md)
+
 ## Usage
 
 ### As npm package
@@ -80,7 +82,7 @@ pipes it to destination stream
 
 Arguments:
 * {String} `symlink` - name of symlink
-* {String} `destination` - destination stream
+* {Stream} `destination` - destination stream
 * {Function} `callback` function
 
 ##### getSnapshotChanges
