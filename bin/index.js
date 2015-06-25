@@ -1,5 +1,4 @@
 var fs = require('fs'),
-    path = require('path'),
     inherit = require('inherit'),
     fsExtra = require('fs-extra'),
     bseAdmin = require('bse-admin'),
@@ -34,7 +33,6 @@ var fs = require('fs'),
         },
 
         execute: function () {
-
             /**
              * 1-я функция запланированного перезапуска сервиса.
              * Происходит после завершения MAX_LAUNCH_COUNT сборки.
@@ -67,7 +65,7 @@ var fs = require('fs'),
 
             if (this['isActive']()) {
                 this._logger.warn('Another execute process is being performed now');
-                gracefulRestart2();
+                gracefulRestart2.apply(this);
                 return;
             }
             this['setActive']();
@@ -75,12 +73,12 @@ var fs = require('fs'),
                 .then(function () {
                     this.callsForNewExecuteIteration = 0;
                     this['setIdle']();
-                    gracefulRestart1();
+                    gracefulRestart1.apply(this);
                 }, this)
                 .fail(function () {
                     this.callsForNewExecuteIteration = 0;
                     this['setIdle']();
-                    gracefulRestart1();
+                    gracefulRestart1.apply(this);
                 }, this);
         }
     }),
