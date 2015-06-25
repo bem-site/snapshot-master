@@ -127,5 +127,10 @@ Run codestyle verification (jshint and jscs)
 npm run codestyle
 ```
 
+Special thanks to:
+
+* Nikolay Ilchenko (http://github.com/tavriaforever)
+* Konstantinova Gela (http://github.com/gela-d)
+
 Maintainer @tormozz48
 Please send your questions and proposals to: tormozz48@gmail.com
